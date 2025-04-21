@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./server
+    container_name: myrecipes-backend
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - PORT=3001
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - myrecipes-network
+
+  frontend:
+    build: ./client
+    container_name: myrecipes-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://backend:3001
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - myrecipes-network
+
+networks:
+  myrecipes-network:
+    driver: bridge
